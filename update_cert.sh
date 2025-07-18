@@ -1,37 +1,93 @@
 #!/bin/bash
 set -euo pipefail
 
-readonly DRY_RUN="false"
-readonly LOGFILE="/var/log/update_certs.log"
-readonly DOMAIN="example.com"
-readonly REMOTE_USER="example_user"
-readonly REMOTE_HOST="terra.example.com"
-readonly REMOTE_BASE_DIR="/home/example_user/.acme.sh/${DOMAIN}_ecc"
-readonly REMOTE_CERT_PATH="${REMOTE_BASE_DIR}/${DOMAIN}.cer"
-readonly REMOTE_CHAIN_PATH="${REMOTE_BASE_DIR}/ca.cer"
-readonly REMOTE_FULLCHAIN_PATH="${REMOTE_BASE_DIR}/fullchain.cer"
-readonly REMOTE_KEY_PATH="${REMOTE_BASE_DIR}/${DOMAIN}.key"
-readonly CERT_DESC="Letsencrypt"
-readonly LOCAL_BASE_DIR="/volume1/scriptuse/cert_update/$CERT_DESC"
-readonly ARCHIVE_BASE_DIR="/usr/syno/etc/certificate/_archive"
+DRY_RUN="${DRY_RUN:-false}"
+readonly DRY_RUN
+
+LOGFILE="${LOGFILE:-/var/log/update_cert.log}"
+readonly LOGFILE
+
+DOMAIN="${DOMAIN:-example.com}"
+readonly DOMAIN
+
+REMOTE_USER="${REMOTE_USER:-example_user}"
+readonly REMOTE_USER
+
+REMOTE_HOST="${REMOTE_HOST:-terra.example.com}"
+readonly REMOTE_HOST
+
+CERT_DESC="${CERT_DESC:-Letsencrypt}"
+readonly CERT_DESC
+
+LOCAL_BASE_DIR="${LOCAL_BASE_DIR:-/volume1/scriptuse/cert_update/$CERT_DESC}"
+readonly LOCAL_BASE_DIR
+
+ARCHIVE_BASE_DIR="${ARCHIVE_BASE_DIR:-/usr/syno/etc/certificate/_archive}"
+readonly ARCHIVE_BASE_DIR
+
 ARCHIVE_ID="$(< "${ARCHIVE_BASE_DIR}/DEFAULT")"
 readonly ARCHIVE_ID
-readonly ARCHIVE_DIR="${ARCHIVE_BASE_DIR}/${ARCHIVE_ID}"
-readonly ARCHIVE_INFO_PATH="${ARCHIVE_BASE_DIR}/INFO"
+
+ARCHIVE_DIR="${ARCHIVE_DIR:-${ARCHIVE_BASE_DIR}/${ARCHIVE_ID}}"
+readonly ARCHIVE_DIR
+
+ARCHIVE_INFO_PATH="${ARCHIVE_INFO_PATH:-${ARCHIVE_BASE_DIR}/INFO}"
+readonly ARCHIVE_INFO_PATH
+
 ARCHIVE_INFO_JSON="$(< "$ARCHIVE_INFO_PATH")"
 readonly ARCHIVE_INFO_JSON
-readonly SUBS_DIR_SYS="/usr/syno/etc/certificate"
-readonly SUBS_DIR_PKG="/usr/local/etc/certificate"
-readonly CERT_FILE_NAME_SRC="${DOMAIN}.cer"
-readonly CHAIN_FILE_NAME_SRC="ca.cer"
-readonly FULLCHAIN_FILE_NAME_SRC="fullchain.cer"
-readonly KEY_FILE_NAME_SRC="${DOMAIN}.key"
-readonly CERT_FILE_NAME_TGT="cert.pem"
-readonly CHAIN_FILE_NAME_TGT="chain.pem"
-readonly FULLCHAIN_FILE_NAME_TGT="fullchain.pem"
-readonly KEY_FILE_NAME_TGT="privkey.pem"
-readonly SHORTCHAIN_FILE_NAME_TGT="short-chain.pem"
-readonly ROOT_CERT_FILE_NAME_TGT="root.pem"
+
+SUBS_DIR_SYS="${SUBS_DIR_SYS:-/usr/syno/etc/certificate}"
+readonly SUBS_DIR_SYS
+
+SUBS_DIR_PKG="${SUBS_DIR_PKG:-/usr/local/etc/certificate}"
+readonly SUBS_DIR_PKG
+
+REMOTE_BASE_DIR="${REMOTE_BASE_DIR:-/home/${REMOTE_USER}/.acme.sh/${DOMAIN}_ecc}"
+readonly REMOTE_BASE_DIR
+
+REMOTE_CERT_PATH="${REMOTE_CERT_PATH:-${REMOTE_BASE_DIR}/${DOMAIN}.cer}"
+readonly REMOTE_CERT_PATH
+
+REMOTE_CHAIN_PATH="${REMOTE_CHAIN_PATH:-${REMOTE_BASE_DIR}/ca.cer}"
+readonly REMOTE_CHAIN_PATH
+
+REMOTE_FULLCHAIN_PATH="${REMOTE_FULLCHAIN_PATH:-${REMOTE_BASE_DIR}/fullchain.cer}"
+readonly REMOTE_FULLCHAIN_PATH
+
+REMOTE_KEY_PATH="${REMOTE_KEY_PATH:-${REMOTE_BASE_DIR}/${DOMAIN}.key}"
+readonly REMOTE_KEY_PATH
+
+CERT_FILE_NAME_SRC="${CERT_FILE_NAME_SRC:-${DOMAIN}.cer}"
+readonly CERT_FILE_NAME_SRC
+
+CHAIN_FILE_NAME_SRC="${CHAIN_FILE_NAME_SRC:-ca.cer}"
+readonly CHAIN_FILE_NAME_SRC
+
+FULLCHAIN_FILE_NAME_SRC="${FULLCHAIN_FILE_NAME_SRC:-fullchain.cer}"
+readonly FULLCHAIN_FILE_NAME_SRC
+
+KEY_FILE_NAME_SRC="${KEY_FILE_NAME_SRC:-${DOMAIN}.key}"
+readonly KEY_FILE_NAME_SRC
+
+CERT_FILE_NAME_TGT="${CERT_FILE_NAME_TGT:-cert.pem}"
+readonly CERT_FILE_NAME_TGT
+
+CHAIN_FILE_NAME_TGT="${CHAIN_FILE_NAME_TGT:-chain.pem}"
+readonly CHAIN_FILE_NAME_TGT
+
+FULLCHAIN_FILE_NAME_TGT="${FULLCHAIN_FILE_NAME_TGT:-fullchain.pem}"
+readonly FULLCHAIN_FILE_NAME_TGT
+
+KEY_FILE_NAME_TGT="${KEY_FILE_NAME_TGT:-privkey.pem}"
+readonly KEY_FILE_NAME_TGT
+
+SHORTCHAIN_FILE_NAME_TGT="${SHORTCHAIN_FILE_NAME_TGT:-short-chain.pem}"
+readonly SHORTCHAIN_FILE_NAME_TGT
+
+ROOT_CERT_FILE_NAME_TGT="${ROOT_CERT_FILE_NAME_TGT:-root.pem}"
+readonly ROOT_CERT_FILE_NAME_TGT
+
 
 mapfile -t SUBSCRIBERS_SYS < <(
   jq -r --arg CERT_DESC "$CERT_DESC" '
