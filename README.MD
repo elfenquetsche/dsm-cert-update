@@ -2,9 +2,9 @@
 
 ## Overview
 
-`update_cert.sh` is a Bash script that pulls a SSL/TLS certificat from a remote source and deploys them on a Synology NAS. It automates fetching, archiving, converting, and installing the certificat for both system services and installed packages.
+`update_cert.sh` is a Bash script that pulls a SSL/TLS certificate from a remote source and deploys them on a Synology NAS. It automates fetching, archiving, converting, and installing the certificate for both system services and installed packages.
 
-The script is designed to retrieve the certificat using `rsync`, but it can easily be adapted to work with local paths or other retrieval methods. The source server can use any ACME client (e.g. `acme.sh`, `Certbot`), as long as it outputs standard PEM-format files.
+The script is designed to retrieve the certificate using `rsync`, but it can easily be adapted to work with local paths or other retrieval methods. The source server can use any ACME client (e.g. `acme.sh`, `Certbot`), as long as it outputs standard PEM-format files.
 
 ## Requirements
 
@@ -38,7 +38,7 @@ Adjust the following variables at the top of the script (or set them as environm
 
 ## Installation on Synology
 
-Install your certificat the **first time manually**. Give it a **exact description** and use it for `$CERT_DESC` in the config part of the script.
+Install your certificate the **first time manually**. Give it a **exact description** and use it for `$CERT_DESC` in the config part of the script.
 
 This script must be run with **root privileges**. Due to restrictions in the Synology DSM Task Scheduler (Web-GUI), the script cannot be stored directly there. A **wrapper script** is needed.
 
@@ -66,8 +66,8 @@ Then in DSM:
    ```bash
    chmod +x /volume1/scripts/update-cert.sh
    ```
-   You can set the Privilege via DSMs file manager aswell (App "File Station").
-2. (Optional) Set `DRY_RUN="true"` at the top to simulate actions without making changes.
+   You can set the Privilege via DSMs file manager as well (App "File Station").
+2. (Optional) Set `DRY_RUN` to `"true"` at the top of `update_cert.sh` to simulate actions without making changes.
 3. Run via the Task Scheduler or manually as root:
 
    ```bash
